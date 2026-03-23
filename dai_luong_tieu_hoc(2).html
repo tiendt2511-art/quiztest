@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Đại Lượng Tiểu Học – Bài Toán Thú Vị</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #e8f4fd;
+  --c1: #ff6b35;   /* cam */
+  --c2: #2ec4b6;   /* xanh lá */
+  --c3: #e040fb;   /* tím */
+  --c4: #ffb300;   /* vàng */
+  --c5: #1565c0;   /* xanh dương */
+  --c6: #e53935;   /* đỏ */
+  --ink: #1a1a2e;
+  --muted: #6b7080;
+  --white: #ffffff;
+  --border: #d0e4f7;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg);
+  background-image: radial-gradient(circle at 20% 20%, #ffe08230 0%, transparent 40%),
+                    radial-gradient(circle at 80% 80%, #b2ebf230 0%, transparent 40%);
+  min-height: 100vh;
+  color: var(--ink);
+}
+
+/* ======= HEADER ======= */
+header {
+  background: var(--c5);
+  background-image: linear-gradient(135deg, #1565c0, #0d47a1);
+  color: white;
+  text-align: center;
+  padding: 36px 20px 28px;
+  position: relative;
+  overflow: hidden;
+}
+header::before {
+  content: '📏📐⚖️🌡️⏱️💧';
+  position: absolute; top: 8px; left: 0; right: 0;
+  font-size: 1.6rem; letter-spacing: 8px; opacity: 0.15;
+}
+.header-title {
+  font-family: 'Fredoka One', cursive;
+  font-size: 2.5rem;
+  letter-spacing: 1px;
+  text-shadow: 2px 3px 0 #00000030;
+  position: relative;
+}
+.header-sub { font-size: 1rem; opacity: 0.8; margin-top: 6px; font-weight: 600; position: relative; }
+
+/* ======= CATEGORY MAP ======= */
+.cat-map {
+  max-width: 900px;
+  margin: 28px auto 0;
+  padding: 0 16px;
+}
+.cat-map-title {
+  font-family: 'Fredoka One', cursive;
+  font-size: 1.2rem;
+  color: var(--c5);
+  margin-bottom: 14px;
+  text-align: center;
+}
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
+  margin-bottom: 30px;
+}
+.cat-chip {
+  background: white;
+  border: 2.5px solid transparent;
+  border-radius: 14px;
+  padding: 12px 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px #00000010;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--ink);
+}
+.cat-chip:hover { transform: translateY(-3px); box-shadow: 0 6px 16px #00000020; }
+.cat-chip.active { color: white; transform: translateY(-3px); box-shadow: 0 6px 16px #00000030; }
+.cat-chip .icon { font-size: 1.8rem; display: block; margin-bottom: 4px; }
+
+/* ======= SECTION TITLE ======= */
+.section-header {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 20px; padding: 0 4px;
+}
+.section-icon { font-size: 2.2rem; }
+.section-info h2 { font-family: 'Fredoka One', cursive; font-size: 1.5rem; }
+.section-info p { font-size: 0.88rem; color: var(--muted); font-weight: 600; margin-top: 2px; }
+
+/* ======= FORMULA STRIP ======= */
+.formula-strip {
+  background: white;
+  border-radius: 14px;
+  padding: 14px 20px;
+  margin-bottom: 22px;
+  border-left: 5px solid currentColor;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--muted);
+  box-shadow: 0 2px 10px #00000010;
+  display: flex; flex-wrap: wrap; gap: 16px; align-items: center;
+}
+.formula-strip .f-item { display: flex; align-items: center; gap: 6px; }
+.formula-strip .f-label { color: inherit; opacity: 0.7; font-size: 0.78rem; }
+.formula-strip .f-val { color: var(--ink); font-size: 0.95rem; background: #f5f5f5; padding: 2px 10px; border-radius: 8px; }
+
+/* ======= PROBLEM CARDS ======= */
+.main-area { max-width: 900px; margin: 0 auto; padding: 0 16px 60px; }
+.section-block { display: none; animation: slideUp 0.35s ease; }
+.section-block.active { display: block; }
+@keyframes slideUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+.cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 18px; }
+
+.pcard {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px #00000012;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 2px solid transparent;
+}
+.pcard:hover { transform: translateY(-4px); box-shadow: 0 10px 28px #00000020; }
+
+.pcard-top {
+  padding: 16px 18px 14px;
+  display: flex; align-items: flex-start; gap: 12px;
+}
+.pcard-emoji { font-size: 2.4rem; flex-shrink: 0; line-height: 1; }
+.pcard-meta { flex: 1; }
+.pcard-tag {
+  display: inline-block;
+  font-size: 0.72rem; font-weight: 800;
+  padding: 2px 10px; border-radius: 20px;
+  color: white; margin-bottom: 6px;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.pcard-title { font-family: 'Fredoka One', cursive; font-size: 1rem; line-height: 1.3; color: var(--ink); }
+
+.pcard-body { padding: 0 18px 14px; font-size: 0.93rem; line-height: 1.7; color: #333; font-weight: 600; }
+.pcard-body b { color: var(--c5); }
+.pcard-body em { font-style: normal; font-weight: 800; }
+
+.pcard-foot {
+  border-top: 1.5px dashed #eee;
+  padding: 12px 18px;
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+}
+.diff-dots { display: flex; gap: 4px; }
+.diff-dot { width: 9px; height: 9px; border-radius: 50%; background: #ddd; }
+
+.reveal-btn {
+  background: transparent;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 0.82rem;
+  padding: 6px 16px;
+  cursor: pointer;
+  color: var(--muted);
+  transition: all 0.2s;
+}
+.reveal-btn:hover { border-color: currentColor; }
+.reveal-btn.open { color: white; border-color: transparent; }
+
+/* SOLUTION DRAWER */
+.solution-drawer {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.4s ease;
+  background: #f9fafb;
+  border-top: 1.5px dashed #eee;
+}
+.solution-drawer.open { max-height: 600px; }
+.sol-inner { padding: 16px 18px; }
+.sol-inner h4 { font-family: 'Fredoka One', cursive; font-size: 0.95rem; margin-bottom: 10px; }
+.sol-step {
+  display: flex; gap: 10px; align-items: flex-start; margin-bottom: 8px;
+}
+.sol-n {
+  width: 20px; height: 20px; border-radius: 50%;
+  color: white; font-size: 0.72rem; font-weight: 800;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;
+}
+.sol-t { font-size: 0.88rem; line-height: 1.6; color: #444; font-weight: 600; }
+.sol-t b { color: var(--c5); }
+.sol-t em { font-style: normal; font-weight: 800; }
+.ans-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  color: white; font-weight: 800; font-size: 0.9rem;
+  padding: 7px 16px; border-radius: 20px; margin-top: 10px;
+}
+.ans-pill::before { content: '✅'; font-size: 0.9rem; }
+
+/* FUN FACT BOX */
+.fun-fact {
+  background: linear-gradient(135deg, #fff9e6, #fff3d0);
+  border: 2px dashed var(--c4);
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin-bottom: 22px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #7a5010;
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.fun-fact .fficon { font-size: 1.4rem; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-title">⚖️ Đại Lượng Tiểu Học</div>
+  <div class="header-sub">Các dạng bài toán thú vị nhất – có lời giải chi tiết</div>
+</header>
+
+<div class="main-area">
+
+  <!-- CATEGORY CHIPS -->
+  <div class="cat-map">
+    <div class="cat-map-title">📚 Chọn nhóm đại lượng</div>
+    <div class="cat-grid">
+      <div class="cat-chip active" id="chip-cd" onclick="show('cd',this)" style="border-color:#ff6b35">
+        <span class="icon">🚗</span>Chuyển động
+      </div>
+      <div class="cat-chip" id="chip-tl" onclick="show('tl',this)" style="">
+        <span class="icon">⚖️</span>Khối lượng
+      </div>
+      <div class="cat-chip" id="chip-dt" onclick="show('dt',this)" style="">
+        <span class="icon">📐</span>Diện tích
+      </div>
+      <div class="cat-chip" id="chip-tt" onclick="show('tt',this)" style="">
+        <span class="icon">📦</span>Thể tích
+      </div>
+      <div class="cat-chip" id="chip-tg" onclick="show('tg',this)" style="">
+        <span class="icon">⏱️</span>Thời gian
+      </div>
+      <div class="cat-chip" id="chip-tien" onclick="show('tien',this)" style="">
+        <span class="icon">💰</span>Tiền – Giá
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= CHUYỂN ĐỘNG ================= -->
+  <div class="section-block active" id="sec-cd">
+    <div class="section-header">
+      <div class="section-icon">🚗</div>
+      <div class="section-info">
+        <h2 style="color:#ff6b35">Đại lượng Chuyển động</h2>
+        <p>Vận tốc · Quãng đường · Thời gian · Xuôi/Ngược dòng · Hai vật thể</p>
+      </div>
+    </div>
+    <div class="formula-strip" style="color:#ff6b35; border-color:#ff6b35">
+      <div class="f-item"><span class="f-label">Vận tốc</span><span class="f-val">v = s ÷ t</span></div>
+      <div class="f-item"><span class="f-label">Quãng đường</span><span class="f-val">s = v × t</span></div>
+      <div class="f-item"><span class="f-label">Thời gian</span><span class="f-val">t = s ÷ v</span></div>
+      <div class="f-item"><span class="f-label">Xuôi dòng</span><span class="f-val">v_x = v_canô + v_nước</span></div>
+      <div class="f-item"><span class="f-label">Ngược dòng</span><span class="f-val">v_ng = v_canô − v_nước</span></div>
+    </div>
+    <div class="cards-grid">
+
+      <!-- BÀI 1 -->
+      <div class="pcard" style="border-color:#ff6b3530">
+        <div class="pcard-top">
+          <div class="pcard-emoji">🐌🐢</div>
+          <div class="pcard-meta">
+            <span class="pcard-tag" style="background:#ff6b35">Cùng chiều</span>
+            <div class="pcard-title">Ốc sên và rùa thi chạy</div>
+          </div>
+        </div>
+        <div class="pcard-body">
+          Ốc sên đi với vận tốc <b>3 m/phút</b>, rùa đi <b>5 m/phút</b>, cùng xuất phát một lúc từ điểm A. Sau <b>10 phút</b>, rùa quay lại đón ốc sên. Hỏi rùa đi ngược về bao nhiêu mét thì gặp ốc?
+        </div>
+        <div class="pcard-foot">
+          <div class="diff-dots">
+            <div class="diff-dot" style="background:#ff6b35"></div>
+            <div class="diff-dot" style="background:#ff6b35"></div>
+            <div class="diff-dot"></div>
+          </div>
+          <button class="reveal-btn" style="border-color:#ff6b35;color:#ff6b35" onclick="toggle(this,'#ff6b35')">💡 Xem lời giải</button>
+        </div>
+        <div class="solution-drawer">
+          <div class="sol-inner">
+            <h4 style="color:#ff6b35">📖 Lời giải</h4>
+            <div class="sol-step"><div class="sol-n" style="background:#ff6b35">1</div><div class="sol-t">Sau 10 phút: Rùa đi được 5×10=<em>50m</em>. Ốc đi được 3×10=<em>30m</em>.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#ff6b35">2</div><div class="sol-t">Khoảng cách giữa rùa và ốc: 50−30 = <em>20m</em>.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#ff6b35">3</div><div class="sol-t">Rùa quay lại, cả hai đi lại gặp nhau. Tốc độ tiếp cận: 5+3=8 m/phút.<br>Thời gian gặp: 20÷8 = 2,5 phút.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#ff6b35">4</div><div class="sol-t">Rùa đi ngược: 5×2,5 = <em>12,5m</em>.</div></div>
+            <div class="ans-pill" style="background:#ff6b35">Rùa đi ngược 12,5 m thì gặp ốc</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BÀI 2 -->
+      <div class="pcard" style="border-color:#ff6b3530">
+        <div class="pcard-top">
+          <div class="pcard-emoji">⛵🌊</div>
+          <div class="pcard-meta">
+            <span class="pcard-tag" style="background:#e53935">Xuôi – Ngược dòng</span>
+            <div class="pcard-title">Canô mất bình xăng</div>
+          </div>
+        </div>
+        <div class="pcard-body">
+          Canô xuôi dòng từ A→B rồi ngược dòng từ B→A mất tổng cộng <b>5 giờ</b>. Vận tốc dòng nước là <b>4 km/h</b>, vận tốc canô khi nước yên lặng là <b>16 km/h</b>. Hỏi quãng đường AB là bao nhiêu km?
+        </div>
+        <div class="pcard-foot">
+          <div class="diff-dots">
+            <div class="diff-dot" style="background:#e53935"></div>
+            <div class="diff-dot" style="background:#e53935"></div>
+            <div class="diff-dot" style="background:#e53935"></div>
+          </div>
+          <button class="reveal-btn" style="border-color:#e53935;color:#e53935" onclick="toggle(this,'#e53935')">💡 Xem lời giải</button>
+        </div>
+        <div class="solution-drawer">
+          <div class="sol-inner">
+            <h4 style="color:#e53935">📖 Lời giải</h4>
+            <div class="sol-step"><div class="sol-n" style="background:#e53935">1</div><div class="sol-t">v xuôi = 16+4 = <em>20 km/h</em>. v ngược = 16−4 = <em>12 km/h</em>.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#e53935">2</div><div class="sol-t">Gọi AB = d. t xuôi = d/20; t ngược = d/12.<br>Tổng: d/20 + d/12 = 5.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#e53935">3</div><div class="sol-t">Quy đồng: 3d/60 + 5d/60 = 5 → 8d/60 = 5 → d = 5×60/8 = <em>37,5 km</em>.</div></div>
+            <div class="ans-pill" style="background:#e53935">AB = 37,5 km</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BÀI 3 -->
+      <div class="pcard" style="border-color:#ff6b3530">
+        <div class="pcard-top">
+          <div class="pcard-emoji">✈️🕐</div>
+          <div class="pcard-meta">
+            <span class="pcard-tag" style="background:#ff9800">Múi giờ + vận tốc</span>
+            <div class="pcard-title">Máy bay xuyên múi giờ</div>
+          </div>
+        </div>
+        <div class="pcard-body">
+          Máy bay rời Hà Nội lúc <b>8:00</b> (UTC+7), đến Tokyo lúc <b>15:00</b> (UTC+9). Quãng đường Hà Nội – Tokyo là <b>3800 km</b>. Hỏi vận tốc trung bình của máy bay là bao nhiêu km/h? <em>(Chú ý múi giờ!)</em>
+        </div>
+        <div class="pcard-foot">
+          <div class="diff-dots">
+            <div class="diff-dot" style="background:#ff9800"></div>
+            <div class="diff-dot" style="background:#ff9800"></div>
+            <div class="diff-dot" style="background:#ff9800"></div>
+          </div>
+          <button class="reveal-btn" style="border-color:#ff9800;color:#ff9800" onclick="toggle(this,'#ff9800')">💡 Xem lời giải</button>
+        </div>
+        <div class="solution-drawer">
+          <div class="sol-inner">
+            <h4 style="color:#ff9800">📖 Lời giải</h4>
+            <div class="sol-step"><div class="sol-n" style="background:#ff9800">1</div><div class="sol-t">Tokyo UTC+9, Hà Nội UTC+7 → Tokyo nhanh hơn 2 giờ.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#ff9800">2</div><div class="sol-t">15:00 giờ Tokyo = 15:00 − 2 giờ = <em>13:00 giờ Hà Nội</em>.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#ff9800">3</div><div class="sol-t">Thời gian bay thực: 13:00 − 8:00 = <em>5 giờ</em>.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#ff9800">4</div><div class="sol-t">Vận tốc = 3800 ÷ 5 = <em>760 km/h</em>.</div></div>
+            <div class="ans-pill" style="background:#ff9800">Vận tốc TB = 760 km/h</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BÀI 4 -->
+      <div class="pcard" style="border-color:#ff6b3530">
+        <div class="pcard-top">
+          <div class="pcard-emoji">🚂🚂</div>
+          <div class="pcard-meta">
+            <span class="pcard-tag" style="background:#673ab7">Hai tàu vượt nhau</span>
+            <div class="pcard-title">Hai đoàn tàu chạy ngược chiều</div>
+          </div>
+        </div>
+        <div class="pcard-body">
+          Tàu A dài <b>200m</b>, chạy <b>72 km/h</b>. Tàu B dài <b>150m</b>, chạy <b>54 km/h</b>. Hai tàu chạy ngược chiều. Hỏi từ lúc đầu tàu A gặp đầu tàu B đến khi đuôi hai tàu cách nhau, mất bao nhiêu <em>giây</em>?
+        </div>
+        <div class="pcard-foot">
+          <div class="diff-dots">
+            <div class="diff-dot" style="background:#673ab7"></div>
+            <div class="diff-dot" style="background:#673ab7"></div>
+            <div class="diff-dot" style="background:#673ab7"></div>
+          </div>
+          <button class="reveal-btn" style="border-color:#673ab7;color:#673ab7" onclick="toggle(this,'#673ab7')">💡 Xem lời giải</button>
+        </div>
+        <div class="solution-drawer">
+          <div class="sol-inner">
+            <h4 style="color:#673ab7">📖 Lời giải</h4>
+            <div class="sol-step"><div class="sol-n" style="background:#673ab7">1</div><div class="sol-t">Đổi: 72 km/h = 20 m/s. 54 km/h = 15 m/s.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#673ab7">2</div><div class="sol-t">Quãng đường hai tàu cần đi để qua nhau hoàn toàn = tổng chiều dài: 200+150 = <em>350m</em>.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#673ab7">3</div><div class="sol-t">Tốc độ tiếp cận (ngược chiều): 20+15 = <em>35 m/s</em>.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#673ab7">4</div><div class="sol-t">Thời gian = 350÷35 = <em>10 giây</em>.</div></div>
+            <div class="ans-pill" style="background:#673ab7">Hai tàu vượt qua nhau trong 10 giây</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= KHỐI LƯỢNG ================= -->
+  <div class="section-block" id="sec-tl">
+    <div class="section-header">
+      <div class="section-icon">⚖️</div>
+      <div class="section-info">
+        <h2 style="color:#2ec4b6">Đại lượng Khối lượng</h2>
+        <p>Cân – đong – đo · Đổi đơn vị · Hỗn hợp · Bài toán thực tế</p>
+      </div>
+    </div>
+    <div class="formula-strip" style="color:#2ec4b6; border-color:#2ec4b6">
+      <div class="f-item"><span class="f-label">Bảng đổi</span><span class="f-val">1 tấn = 10 tạ = 100 yến = 1000 kg</span></div>
+      <div class="f-item"><span class="f-label">Nhỏ hơn</span><span class="f-val">1 kg = 10 hg = 1000 g</span></div>
+    </div>
+    <div class="fun-fact">
+      <span class="fficon">🤔</span>
+      <span>Thú vị: <b>1 kg lông vũ</b> và <b>1 kg đá</b> nặng bằng nhau — nhưng thể tích khác hoàn toàn! Đại lượng khối lượng chỉ đo "lượng vật chất", không phụ thuộc thể tích hay hình dạng.</span>
+    </div>
+    <div class="cards-grid">
+
+      <div class="pcard" style="border-color:#2ec4b630">
+        <div class="pcard-top">
+          <div class="pcard-emoji">🎭⚖️</div>
+          <div class="pcard-meta">
+            <span class="pcard-tag" style="background:#2ec4b6">Cân đĩa</span>
+            <div class="pcard-title">Bài toán cân đĩa cổ điển</div>
+          </div>
+        </div>
+        <div class="pcard-body">
+          Có 9 hòn đá trông giống nhau, nhưng <b>1 hòn nặng hơn</b> 8 hòn còn lại (8 hòn nặng bằng nhau). Dùng cân đĩa <em>không có quả cân</em>, ít nhất phải cân <b>bao nhiêu lần</b> để tìm chắc chắn hòn đá nặng hơn?
+        </div>
+        <div class="pcard-foot">
+          <div class="diff-dots">
+            <div class="diff-dot" style="background:#2ec4b6"></div>
+            <div class="diff-dot" style="background:#2ec4b6"></div>
+            <div class="diff-dot" style="background:#2ec4b6"></div>
+          </div>
+          <button class="reveal-btn" style="border-color:#2ec4b6;color:#2ec4b6" onclick="toggle(this,'#2ec4b6')">💡 Xem lời giải</button>
+        </div>
+        <div class="solution-drawer">
+          <div class="sol-inner">
+            <h4 style="color:#2ec4b6">📖 Lời giải – Chiến thuật chia 3</h4>
+            <div class="sol-step"><div class="sol-n" style="background:#2ec4b6">1</div><div class="sol-t">Chia 9 hòn thành 3 nhóm: A(3), B(3), C(3).</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#2ec4b6">2</div><div class="sol-t"><b>Lần cân 1:</b> Đặt A vs B. Nếu một bên nặng hơn → hòn đá nặng trong nhóm đó. Nếu bằng nhau → hòn đá nặng trong C.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#2ec4b6">3</div><div class="sol-t"><b>Lần cân 2:</b> Từ nhóm 3 hòn đã xác định, cân 1 vs 1. Nếu bằng nhau → hòn còn lại là nặng. Nếu lệch → tìm ra ngay.</div></div>
+            <div class="ans-pill" style="background:#2ec4b6">Chỉ cần 2 lần cân là tìm được!</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pcard" style="border-color:#2ec4b630">
+        <div class="pcard-top">
+          <div class="pcard-emoji">🍬🍫</div>
+          <div class="pcard-meta">
+            <span class="pcard-tag" style="background:#00897b">Hỗn hợp</span>
+            <div class="pcard-title">Trộn kẹo hai loại</div>
+          </div>
+        </div>
+        <div class="pcard-body">
+          Kẹo loại A giá <b>80 000 đ/kg</b>, kẹo loại B giá <b>50 000 đ/kg</b>. Cần trộn hai loại để được <b>12 kg</b> kẹo hỗn hợp giá <b>60 000 đ/kg</b>. Hỏi cần bao nhiêu kg mỗi loại?
+        </div>
+        <div class="pcard-foot">
+          <div class="diff-dots">
+            <div class="diff-dot" style="background:#00897b"></div>
+            <div class="diff-dot" style="background:#00897b"></div>
+            <div class="diff-dot"></div>
+          </div>
+          <button class="reveal-btn" style="border-color:#00897b;color:#00897b" onclick="toggle(this,'#00897b')">💡 Xem lời giải</button>
+        </div>
+        <div class="solution-drawer">
+          <div class="sol-inner">
+            <h4 style="color:#00897b">📖 Lời giải</h4>
+            <div class="sol-step"><div class="sol-n" style="background:#00897b">1</div><div class="sol-t">Gọi x = kg kẹo A. Thì kẹo B = 12−x kg.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#00897b">2</div><div class="sol-t">Tổng tiền hỗn hợp: 60 000 × 12 = 720 000 đ.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#00897b">3</div><div class="sol-t">Phương trình: 80 000x + 50 000(12−x) = 720 000.<br>→ 80 000x + 600 000 − 50 000x = 720 000.<br>→ 30 000x = 120 000 → x = <em>4 kg</em>.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#00897b">4</div><div class="sol-t">Kẹo B = 12−4 = <em>8 kg</em>.</div></div>
+            <div class="ans-pill" style="background:#00897b">Kẹo A: 4 kg · Kẹo B: 8 kg</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pcard" style="border-color:#2ec4b630">
+        <div class="pcard-top">
+          <div class="pcard-emoji">🐘📦</div>
+          <div class="pcard-meta">
+            <span class="pcard-tag" style="background:#f4511e">Đổi đơn vị vui</span>
+            <div class="pcard-title">Voi nặng bằng bao nhiêu học sinh?</div>
+          </div>
+        </div>
+        <div class="pcard-body">
+          Một con voi nặng <b>4,5 tấn</b>. Trung bình mỗi học sinh lớp 5 nặng <b>36 kg</b>. Hỏi cần <b>bao nhiêu học sinh</b> đứng lên cân để nặng bằng con voi? Và nếu xếp thành hàng dọc, mỗi người chiếm 50 cm, hàng dài bao nhiêu mét?
+        </div>
+        <div class="pcard-foot">
+          <div class="diff-dots">
+            <div class="diff-dot" style="background:#f4511e"></div>
+            <div class="diff-dot"></div>
+            <div class="diff-dot"></div>
+          </div>
+          <button class="reveal-btn" style="border-color:#f4511e;color:#f4511e" onclick="toggle(this,'#f4511e')">💡 Xem lời giải</button>
+        </div>
+        <div class="solution-drawer">
+          <div class="sol-inner">
+            <h4 style="color:#f4511e">📖 Lời giải</h4>
+            <div class="sol-step"><div class="sol-n" style="background:#f4511e">1</div><div class="sol-t">4,5 tấn = 4500 kg.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#f4511e">2</div><div class="sol-t">Số học sinh = 4500 ÷ 36 = <em>125 bạn</em>.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#f4511e">3</div><div class="sol-t">Chiều dài hàng: 125 × 0,5m = <em>62,5 m</em> (tương đương 6 lớp học nối tiếp!).</div></div>
+            <div class="ans-pill" style="background:#f4511e">125 học sinh · Hàng dài 62,5 m</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= DIỆN TÍCH ================= -->
+  <div class="section-block" id="sec-dt">
+    <div class="section-header">
+      <div class="section-icon">📐</div>
+      <div class="section-info">
+        <h2 style="color:#e040fb">Đại lượng Diện tích</h2>
+        <p>Hình phẳng · Đổi đơn vị · Thực tế (ruộng, nhà, bản đồ)</p>
+      </div>
+    </div>
+    <div class="formula-strip" style="color:#e040fb; border-color:#e040fb">
+      <div class="f-item"><span class="f-label">1 km²</span><span class="f-val">= 1 000 000 m²</span></div>
+      <div class="f-item"><span class="f-label">1 ha</span><span class="f-val">= 10 000 m²</span></div>
+      <div class="f-item"><span class="f-label">Hình tròn</span><span class="f-val">S = π × r²</span></div>
+      <div class="f-item"><span class="f-label">Tam giác</span><span class="f-val">S = (đáy × cao) ÷ 2</span></div>
+      <div class="f-item"><span class="f-label">Hình thang</span><span class="f-val">S = (đ.lớn + đ.nhỏ) × h ÷ 2</span></div>
+    </div>
+    <div class="cards-grid">
+
+      <div class="pcard" style="border-color:#e040fb30">
+        <div class="pcard-top">
+          <div class="pcard-emoji">🗺️📏</div>
+          <div class="pcard-meta">
+            <span class="pcard-tag" style="background:#e040fb">Bản đồ thực tế</span>
+            <div class="pcard-title">Hà Nội trên bản đồ</div>
+          </div>
+        </div>
+        <div class="pcard-body">
+          Trên bản đồ tỉ lệ <b>1 : 500 000</b>, diện tích Hà Nội được vẽ là một hình chữ nhật <b>6,8 cm × 5,2 cm</b>. Hỏi diện tích thực của Hà Nội theo mô hình này là bao nhiêu <em>km²</em>?
+        </div>
+        <div class="pcard-foot">
+          <div class="diff-dots">
+            <div class="diff-dot" style="background:#e040fb"></div>
+            <div class="diff-dot" style="background:#e040fb"></div>
+            <div class="diff-dot"></div>
+          </div>
+          <button class="reveal-btn" style="border-color:#e040fb;color:#e040fb" onclick="toggle(this,'#e040fb')">💡 Xem lời giải</button>
+        </div>
+        <div class="solution-drawer">
+          <div class="sol-inner">
+            <h4 style="color:#e040fb">📖 Lời giải</h4>
+            <div class="sol-step"><div class="sol-n" style="background:#e040fb">1</div><div class="sol-t">Tỉ lệ 1:500 000 → 1cm trên bản đồ = 500 000 cm = 5 km thực tế.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#e040fb">2</div><div class="sol-t">Chiều dài thực: 6,8 × 5 = <em>34 km</em>.<br>Chiều rộng thực: 5,2 × 5 = <em>26 km</em>.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#e040fb">3</div><div class="sol-t">Diện tích = 34 × 26 = <em>884 km²</em>.<br>(Diện tích Hà Nội thực là ~3 300 km² – bản đồ chỉ là ước lượng!)</div></div>
+            <div class="ans-pill" style="background:#e040fb">Diện tích tính theo bản đồ: 884 km²</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pcard" style="border-color:#e040fb30">
+        <div class="pcard-top">
+          <div class="pcard-emoji">🌻🌾</div>
+          <div class="pcard-meta">
+            <span class="pcard-tag" style="background:#8e24aa">Ruộng – Năng suất</span>
+            <div class="pcard-title">Ruộng lúa nhà bác Tư</div>
+          </div>
+        </div>
+        <div class="pcard-body">
+          Ruộng bác Tư hình thang, đáy lớn <b>80m</b>, đáy nhỏ <b>60m</b>, chiều cao <b>50m</b>. Năng suất <b>5,4 tấn/ha</b>. Hỏi bác Tư thu được bao nhiêu <em>kg lúa</em>?
+        </div>
+        <div class="pcard-foot">
+          <div class="diff-dots">
+            <div class="diff-dot" style="background:#8e24aa"></div>
+            <div class="diff-dot" style="background:#8e24aa"></div>
+            <div class="diff-dot"></div>
+          </div>
+          <button class="reveal-btn" style="border-color:#8e24aa;color:#8e24aa" onclick="toggle(this,'#8e24aa')">💡 Xem lời giải</button>
+        </div>
+        <div class="solution-drawer">
+          <div class="sol-inner">
+            <h4 style="color:#8e24aa">📖 Lời giải</h4>
+            <div class="sol-step"><div class="sol-n" style="background:#8e24aa">1</div><div class="sol-t">S = (80+60)×50÷2 = 140×25 = <em>3 500 m²</em>.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#8e24aa">2</div><div class="sol-t">Đổi: 3 500 m² = 0,35 ha.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#8e24aa">3</div><div class="sol-t">Lúa thu hoạch: 5,4 tấn/ha × 0,35 ha = 1,89 tấn = <em>1 890 kg</em>.</div></div>
+            <div class="ans-pill" style="background:#8e24aa">Thu được 1 890 kg lúa</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pcard" style="border-color:#e040fb30">
+        <div class="pcard-top">
+          <div class="pcard-emoji">🍕⭕</div>
+          <div class="pcard-meta">
+            <span class="pcard-tag" style="background:#e040fb">Hình tròn thú vị</span>
+            <div class="pcard-title">Pizza lớn hay 2 pizza nhỏ?</div>
+          </div>
+        </div>
+        <div class="pcard-body">
+          Pizza cỡ lớn đường kính <b>40 cm</b>, giá <b>200 000 đ</b>. Pizza cỡ nhỏ đường kính <b>28 cm</b>, giá <b>100 000 đ</b>. Mua <b>2 pizza nhỏ</b> hay <b>1 pizza lớn</b> thì được nhiều hơn? (π ≈ 3,14)
+        </div>
+        <div class="pcard-foot">
+          <div class="diff-dots">
+            <div class="diff-dot" style="background:#e040fb"></div>
+            <div class="diff-dot" style="background:#e040fb"></div>
+            <div class="diff-dot"></div>
+          </div>
+          <button class="reveal-btn" style="border-color:#e040fb;color:#e040fb" onclick="toggle(this,'#e040fb')">💡 Xem lời giải</button>
+        </div>
+        <div class="solution-drawer">
+          <div class="sol-inner">
+            <h4 style="color:#e040fb">📖 Lời giải – Kết quả bất ngờ!</h4>
+            <div class="sol-step"><div class="sol-n" style="background:#e040fb">1</div><div class="sol-t">Pizza lớn r=20cm: S = 3,14×20² = 3,14×400 = <em>1 256 cm²</em>.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#e040fb">2</div><div class="sol-t">Pizza nhỏ r=14cm: S = 3,14×14² = 3,14×196 = <em>615,44 cm²</em>.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#e040fb">3</div><div class="sol-t">2 pizza nhỏ: 615,44 × 2 = <em>1 230,88 cm²</em>. Cùng giá 200 000 đ!</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#e040fb">4</div><div class="sol-t">1 256 cm² > 1 230,88 cm² → Pizza lớn nhiều hơn ~25 cm² dù cùng giá!</div></div>
+            <div class="ans-pill" style="background:#e040fb">🍕 Mua 1 pizza lớn lợi hơn!</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= THỂ TÍCH ================= -->
+  <div class="section-block" id="sec-tt">
+    <div class="section-header">
+      <div class="section-icon">📦</div>
+      <div class="section-info">
+        <h2 style="color:#ffb300">Đại lượng Thể tích</h2>
+        <p>Hộp chữ nhật · Lập phương · Đổ chất lỏng · Khối vật liệu</p>
+      </div>
+    </div>
+    <div class="formula-strip" style="color:#ffb300; border-color:#ffb300">
+      <div class="f-item"><span class="f-label">Hộp chữ nhật</span><span class="f-val">V = d × r × c</span></div>
+      <div class="f-item"><span class="f-label">Lập phương</span><span class="f-val">V = a³</span></div>
+      <div class="f-item"><span class="f-label">1 dm³</span><span class="f-val">= 1 lít = 1 000 cm³</span></div>
+      <div class="f-item"><span class="f-label">1 m³</span><span class="f-val">= 1 000 dm³ = 1 000 000 cm³</span></div>
+    </div>
+    <div class="cards-grid">
+
+      <div class="pcard" style="border-color:#ffb30030">
+        <div class="pcard-top">
+          <div class="pcard-emoji">🧊💧</div>
+          <div class="pcard-meta">
+            <span class="pcard-tag" style="background:#ffb300">Mực nước dâng</span>
+            <div class="pcard-title">Thả đá vào bể cá</div>
+          </div>
+        </div>
+        <div class="pcard-body">
+          Bể cá hình hộp chữ nhật dài <b>60 cm</b>, rộng <b>40 cm</b>. Nước đang ở mức <b>30 cm</b>. Thả vào bể một hòn đá hình hộp chữ nhật <b>10×8×6 cm</b>. Hỏi mực nước dâng thêm bao nhiêu cm? <em>(Đá chìm hoàn toàn)</em>
+        </div>
+        <div class="pcard-foot">
+          <div class="diff-dots">
+            <div class="diff-dot" style="background:#ffb300"></div>
+            <div class="diff-dot" style="background:#ffb300"></div>
+            <div class="diff-dot"></div>
+          </div>
+          <button class="reveal-btn" style="border-color:#ffb300;color:#ffb300" onclick="toggle(this,'#ffb300')">💡 Xem lời giải</button>
+        </div>
+        <div class="solution-drawer">
+          <div class="sol-inner">
+            <h4 style="color:#ffb300">📖 Lời giải</h4>
+            <div class="sol-step"><div class="sol-n" style="background:#ffb300">1</div><div class="sol-t">V đá = 10×8×6 = <em>480 cm³</em>.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#ffb300">2</div><div class="sol-t">Diện tích đáy bể = 60×40 = <em>2 400 cm²</em>.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#ffb300">3</div><div class="sol-t">Mực nước dâng = V đá ÷ S đáy = 480 ÷ 2400 = <em>0,2 cm</em>.</div></div>
+            <div class="ans-pill" style="background:#ffb300">Mực nước dâng thêm 0,2 cm = 2 mm</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pcard" style="border-color:#ffb30030">
+        <div class="pcard-top">
+          <div class="pcard-emoji">🧱🏗️</div>
+          <div class="pcard-meta">
+            <span class="pcard-tag" style="background:#e65100">Xây dựng</span>
+            <div class="pcard-title">Xây bức tường gạch</div>
+          </div>
+        </div>
+        <div class="pcard-body">
+          Bức tường dài <b>8m</b>, cao <b>3m</b>, dày <b>20 cm</b>. Một viên gạch kích thước <b>20×10×5 cm</b>. Biết vữa chiếm <b>10%</b> thể tích tường. Hỏi cần bao nhiêu viên gạch?
+        </div>
+        <div class="pcard-foot">
+          <div class="diff-dots">
+            <div class="diff-dot" style="background:#e65100"></div>
+            <div class="diff-dot" style="background:#e65100"></div>
+            <div class="diff-dot" style="background:#e65100"></div>
+          </div>
+          <button class="reveal-btn" style="border-color:#e65100;color:#e65100" onclick="toggle(this,'#e65100')">💡 Xem lời giải</button>
+        </div>
+        <div class="solution-drawer">
+          <div class="sol-inner">
+            <h4 style="color:#e65100">📖 Lời giải</h4>
+            <div class="sol-step"><div class="sol-n" style="background:#e65100">1</div><div class="sol-t">V tường = 800×300×20 = 4 800 000 cm³.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#e65100">2</div><div class="sol-t">V gạch (bỏ vữa 10%): 4 800 000 × 90% = <em>4 320 000 cm³</em>.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#e65100">3</div><div class="sol-t">V 1 viên gạch = 20×10×5 = <em>1 000 cm³</em>.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#e65100">4</div><div class="sol-t">Số viên = 4 320 000 ÷ 1 000 = <em>4 320 viên</em>.</div></div>
+            <div class="ans-pill" style="background:#e65100">Cần 4 320 viên gạch</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pcard" style="border-color:#ffb30030">
+        <div class="pcard-top">
+          <div class="pcard-emoji">🫗🔄</div>
+          <div class="pcard-meta">
+            <span class="pcard-tag" style="background:#ffb300">Rót qua lại</span>
+            <div class="pcard-title">Bài toán rót nước cổ điển</div>
+          </div>
+        </div>
+        <div class="pcard-body">
+          Có 3 bình: bình A chứa <b>8 lít</b> nước đầy, bình B <b>5 lít</b> rỗng, bình C <b>3 lít</b> rỗng. <em>Không có dụng cụ đo nào khác</em>. Hãy chia để được <b>4 lít</b> trong bình A và <b>4 lít</b> trong bình B.
+        </div>
+        <div class="pcard-foot">
+          <div class="diff-dots">
+            <div class="diff-dot" style="background:#ffb300"></div>
+            <div class="diff-dot" style="background:#ffb300"></div>
+            <div class="diff-dot" style="background:#ffb300"></div>
+          </div>
+          <button class="reveal-btn" style="border-color:#ffb300;color:#ffb300" onclick="toggle(this,'#ffb300')">💡 Xem lời giải</button>
+        </div>
+        <div class="solution-drawer">
+          <div class="sol-inner">
+            <h4 style="color:#ffb300">📖 Lời giải – Trò chơi rót nước</h4>
+            <div class="sol-step"><div class="sol-n" style="background:#ffb300">1</div><div class="sol-t">A=8,B=0,C=0 → Rót A→B: <em>A=3, B=5, C=0</em>.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#ffb300">2</div><div class="sol-t">Rót B→C: <em>A=3, B=2, C=3</em>.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#ffb300">3</div><div class="sol-t">Rót C→A: <em>A=6, B=2, C=0</em>.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#ffb300">4</div><div class="sol-t">Rót B→C: <em>A=6, B=0, C=2</em>.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#ffb300">5</div><div class="sol-t">Rót A→B: <em>A=1, B=5, C=2</em>.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#ffb300">6</div><div class="sol-t">Rót B→C: <em>A=1, B=4, C=3</em>.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#ffb300">7</div><div class="sol-t">Rót C→A: <em>A=4, B=4, C=0</em> ✅</div></div>
+            <div class="ans-pill" style="background:#ffb300">7 bước rót là chia được 4–4 lít!</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= THỜI GIAN ================= -->
+  <div class="section-block" id="sec-tg">
+    <div class="section-header">
+      <div class="section-icon">⏱️</div>
+      <div class="section-info">
+        <h2 style="color:#1565c0">Đại lượng Thời gian</h2>
+        <p>Giờ – Phút – Giây · Lịch · Múi giờ · Khoảng cách thời gian</p>
+      </div>
+    </div>
+    <div class="formula-strip" style="color:#1565c0; border-color:#1565c0">
+      <div class="f-item"><span class="f-label">1 giờ</span><span class="f-val">= 60 phút = 3 600 giây</span></div>
+      <div class="f-item"><span class="f-label">1 ngày</span><span class="f-val">= 24 giờ</span></div>
+      <div class="f-item"><span class="f-label">1 năm thường</span><span class="f-val">= 365 ngày</span></div>
+      <div class="f-item"><span class="f-label">Năm nhuận</span><span class="f-val">= 366 ngày (chia hết cho 4)</span></div>
+    </div>
+    <div class="cards-grid">
+
+      <div class="pcard" style="border-color:#1565c030">
+        <div class="pcard-top">
+          <div class="pcard-emoji">🕰️🔢</div>
+          <div class="pcard-meta">
+            <span class="pcard-tag" style="background:#1565c0">Kim đồng hồ</span>
+            <div class="pcard-title">Kim phút và kim giờ trùng nhau</div>
+          </div>
+        </div>
+        <div class="pcard-body">
+          Lúc <b>12 giờ</b>, kim phút và kim giờ trùng nhau. Lần tiếp theo chúng trùng nhau là lúc mấy giờ mấy phút? <em>(Làm tròn đến giây)</em>
+        </div>
+        <div class="pcard-foot">
+          <div class="diff-dots">
+            <div class="diff-dot" style="background:#1565c0"></div>
+            <div class="diff-dot" style="background:#1565c0"></div>
+            <div class="diff-dot" style="background:#1565c0"></div>
+          </div>
+          <button class="reveal-btn" style="border-color:#1565c0;color:#1565c0" onclick="toggle(this,'#1565c0')">💡 Xem lời giải</button>
+        </div>
+        <div class="solution-drawer">
+          <div class="sol-inner">
+            <h4 style="color:#1565c0">📖 Lời giải</h4>
+            <div class="sol-step"><div class="sol-n" style="background:#1565c0">1</div><div class="sol-t">Kim phút quay 360° trong 60 phút = <em>6°/phút</em>.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#1565c0">2</div><div class="sol-t">Kim giờ quay 360° trong 720 phút = <em>0,5°/phút</em>.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#1565c0">3</div><div class="sol-t">Kim phút nhanh hơn: 6 − 0,5 = 5,5°/phút.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#1565c0">4</div><div class="sol-t">Trùng nhau lại sau: 360 ÷ 5,5 = <em>65 phút 27 giây</em>.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#1565c0">5</div><div class="sol-t">Tức là lúc: <em>1 giờ 5 phút 27 giây</em>.</div></div>
+            <div class="ans-pill" style="background:#1565c0">Trùng nhau lúc 1 giờ 5 phút 27 giây</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pcard" style="border-color:#1565c030">
+        <div class="pcard-top">
+          <div class="pcard-emoji">🎂📅</div>
+          <div class="pcard-meta">
+            <span class="pcard-tag" style="background:#0277bd">Thứ trong tuần</span>
+            <div class="pcard-title">Sinh nhật rơi vào thứ mấy?</div>
+          </div>
+        </div>
+        <div class="pcard-body">
+          Ngày <b>1/1/2024 là thứ Hai</b>. Hỏi ngày <b>19/8/2024</b> là thứ mấy? <em>(2024 là năm nhuận)</em>
+        </div>
+        <div class="pcard-foot">
+          <div class="diff-dots">
+            <div class="diff-dot" style="background:#0277bd"></div>
+            <div class="diff-dot" style="background:#0277bd"></div>
+            <div class="diff-dot"></div>
+          </div>
+          <button class="reveal-btn" style="border-color:#0277bd;color:#0277bd" onclick="toggle(this,'#0277bd')">💡 Xem lời giải</button>
+        </div>
+        <div class="solution-drawer">
+          <div class="sol-inner">
+            <h4 style="color:#0277bd">📖 Lời giải</h4>
+            <div class="sol-step"><div class="sol-n" style="background:#0277bd">1</div><div class="sol-t">Số ngày từ 1/1 đến 19/8: Tháng 1→7 đầy đủ + 19 ngày tháng 8.<br>T1=31, T2=29(nhuận), T3=31, T4=30, T5=31, T6=30, T7=31 → <em>213 ngày</em>. Cộng 19 ngày tháng 8 = <em>232 ngày kể từ ngày 1</em>.<br>→ 232−1 = 231 ngày sau ngày 1/1.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#0277bd">2</div><div class="sol-t">231 ÷ 7 = 33 tuần đúng (33×7=231). Dư <em>0</em>.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#0277bd">3</div><div class="sol-t">Dư 0 → cùng thứ với 1/1 = <em>Thứ Hai</em>.</div></div>
+            <div class="ans-pill" style="background:#0277bd">19/8/2024 là Thứ Hai</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pcard" style="border-color:#1565c030">
+        <div class="pcard-top">
+          <div class="pcard-emoji">⏳🐢</div>
+          <div class="pcard-meta">
+            <span class="pcard-tag" style="background:#1565c0">Tốc độ làm việc</span>
+            <div class="pcard-title">3 người làm xong khi nào?</div>
+          </div>
+        </div>
+        <div class="pcard-body">
+          An làm xong 1 công việc trong <b>6 giờ</b>, Bình trong <b>4 giờ</b>, Cường trong <b>12 giờ</b>. Ba người cùng làm. Hỏi sau bao nhiêu giờ thì xong? Và nếu Bình chỉ làm được <b>1 giờ</b> rồi nghỉ, An và Cường tiếp tục, mất thêm bao lâu?
+        </div>
+        <div class="pcard-foot">
+          <div class="diff-dots">
+            <div class="diff-dot" style="background:#1565c0"></div>
+            <div class="diff-dot" style="background:#1565c0"></div>
+            <div class="diff-dot" style="background:#1565c0"></div>
+          </div>
+          <button class="reveal-btn" style="border-color:#1565c0;color:#1565c0" onclick="toggle(this,'#1565c0')">💡 Xem lời giải</button>
+        </div>
+        <div class="solution-drawer">
+          <div class="sol-inner">
+            <h4 style="color:#1565c0">📖 Lời giải</h4>
+            <div class="sol-step"><div class="sol-n" style="background:#1565c0">1</div><div class="sol-t">1 giờ: An=1/6, Bình=1/4, Cường=1/12. Cả 3: 2/12+3/12+1/12 = <em>6/12=1/2 công/giờ</em>.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#1565c0">2</div><div class="sol-t">Ba người làm xong: 1÷(1/2) = <em>2 giờ</em>.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#1565c0">3</div><div class="sol-t">Bình làm 1 giờ: xong 1/4 công. Còn lại: 1−1/4 = 3/4 công.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#1565c0">4</div><div class="sol-t">An+Cường: 1/6+1/12 = 2/12+1/12 = 1/4 công/giờ.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#1565c0">5</div><div class="sol-t">Thời gian thêm: (3/4)÷(1/4) = <em>3 giờ</em>. Tổng: 1+3 = <em>4 giờ</em>.</div></div>
+            <div class="ans-pill" style="background:#1565c0">3 người: 2 giờ · Kịch bản 2: 4 giờ tổng</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= TIỀN – GIÁ ================= -->
+  <div class="section-block" id="sec-tien">
+    <div class="section-header">
+      <div class="section-icon">💰</div>
+      <div class="section-info">
+        <h2 style="color:#2e7d32">Đại lượng Tiền – Giá cả</h2>
+        <p>Mua bán · Lãi lỗ · Giảm giá · Đổi tiền · Kế hoạch chi tiêu</p>
+      </div>
+    </div>
+    <div class="formula-strip" style="color:#2e7d32; border-color:#2e7d32">
+      <div class="f-item"><span class="f-label">Lãi</span><span class="f-val">= Giá bán − Giá vốn</span></div>
+      <div class="f-item"><span class="f-label">% lãi</span><span class="f-val">= Lãi ÷ Giá vốn × 100%</span></div>
+      <div class="f-item"><span class="f-label">Giảm giá</span><span class="f-val">Giá mới = Giá gốc × (100−x)%</span></div>
+    </div>
+    <div class="cards-grid">
+
+      <div class="pcard" style="border-color:#2e7d3230">
+        <div class="pcard-top">
+          <div class="pcard-emoji">🛒💸</div>
+          <div class="pcard-meta">
+            <span class="pcard-tag" style="background:#2e7d32">Mua bán lãi lỗ</span>
+            <div class="pcard-title">Người bán hàng bị lỗ hay lãi?</div>
+          </div>
+        </div>
+        <div class="pcard-body">
+          Một người bán 2 cái áo, mỗi cái giá <b>300 000 đ</b>. Cái thứ nhất lãi <b>20%</b>, cái thứ hai lỗ <b>20%</b>. Hỏi tổng cộng người đó <em>lãi hay lỗ bao nhiêu</em>? <em>(Bẫy tư duy!)</em>
+        </div>
+        <div class="pcard-foot">
+          <div class="diff-dots">
+            <div class="diff-dot" style="background:#2e7d32"></div>
+            <div class="diff-dot" style="background:#2e7d32"></div>
+            <div class="diff-dot" style="background:#2e7d32"></div>
+          </div>
+          <button class="reveal-btn" style="border-color:#2e7d32;color:#2e7d32" onclick="toggle(this,'#2e7d32')">💡 Xem lời giải</button>
+        </div>
+        <div class="solution-drawer">
+          <div class="sol-inner">
+            <h4 style="color:#2e7d32">📖 Lời giải – Kết quả bất ngờ!</h4>
+            <div class="sol-step"><div class="sol-n" style="background:#2e7d32">1</div><div class="sol-t">Áo 1 bán 300 000, lãi 20% → Vốn = 300 000÷1,2 = <em>250 000 đ</em>.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#2e7d32">2</div><div class="sol-t">Áo 2 bán 300 000, lỗ 20% → Vốn = 300 000÷0,8 = <em>375 000 đ</em>.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#2e7d32">3</div><div class="sol-t">Tổng vốn = 625 000 đ. Tổng thu = 600 000 đ.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#2e7d32">4</div><div class="sol-t">→ Lỗ 25 000 đ! Dù 1 lãi 1 lỗ cùng 20% nhưng vẫn lỗ vì vốn 2 áo khác nhau!</div></div>
+            <div class="ans-pill" style="background:#2e7d32">Tổng cộng lỗ 25 000 đồng!</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pcard" style="border-color:#2e7d3230">
+        <div class="pcard-top">
+          <div class="pcard-emoji">🏦📈</div>
+          <div class="pcard-meta">
+            <span class="pcard-tag" style="background:#1b5e20">Lãi kép đơn giản</span>
+            <div class="pcard-title">Tiết kiệm cho tương lai</div>
+          </div>
+        </div>
+        <div class="pcard-body">
+          Mỗi tháng tiết kiệm <b>500 000 đ</b>, gửi vào cuối năm với lãi suất <b>7%/năm</b>. Sau <b>3 năm</b> rút ra được bao nhiêu tiền? <em>(Lãi đơn, tính từng năm một)</em>
+        </div>
+        <div class="pcard-foot">
+          <div class="diff-dots">
+            <div class="diff-dot" style="background:#1b5e20"></div>
+            <div class="diff-dot" style="background:#1b5e20"></div>
+            <div class="diff-dot" style="background:#1b5e20"></div>
+          </div>
+          <button class="reveal-btn" style="border-color:#1b5e20;color:#1b5e20" onclick="toggle(this,'#1b5e20')">💡 Xem lời giải</button>
+        </div>
+        <div class="solution-drawer">
+          <div class="sol-inner">
+            <h4 style="color:#1b5e20">📖 Lời giải</h4>
+            <div class="sol-step"><div class="sol-n" style="background:#1b5e20">1</div><div class="sol-t">Mỗi năm gửi: 500 000 × 12 = <em>6 000 000 đ</em>.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#1b5e20">2</div><div class="sol-t">Năm 1 gửi 6tr, sau 3 năm lãi = 6tr×7%×3 = 1 260 000 đ → Cộng = 7 260 000 đ.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#1b5e20">3</div><div class="sol-t">Năm 2 gửi 6tr, sau 2 năm lãi = 6tr×7%×2 = 840 000 đ → Cộng = 6 840 000 đ.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#1b5e20">4</div><div class="sol-t">Năm 3 gửi 6tr, sau 1 năm lãi = 6tr×7%×1 = 420 000 đ → Cộng = 6 420 000 đ.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#1b5e20">5</div><div class="sol-t">Tổng = 7 260 000 + 6 840 000 + 6 420 000 = <em>20 520 000 đ</em>.</div></div>
+            <div class="ans-pill" style="background:#1b5e20">Rút được 20 520 000 đồng sau 3 năm</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pcard" style="border-color:#2e7d3230">
+        <div class="pcard-top">
+          <div class="pcard-emoji">🛍️🏷️</div>
+          <div class="pcard-meta">
+            <span class="pcard-tag" style="background:#2e7d32">Siêu thị khuyến mãi</span>
+            <div class="pcard-title">Mua mấy hộp thì có lợi?</div>
+          </div>
+        </div>
+        <div class="pcard-body">
+          Sữa giá <b>25 000 đ/hộp</b>. Siêu thị A: mua <b>5 tặng 1</b>. Siêu thị B: giảm giá <b>18%</b>. Bạn cần mua đúng <b>12 hộp</b>. Mua ở đâu tiết kiệm hơn và tiết kiệm bao nhiêu?
+        </div>
+        <div class="pcard-foot">
+          <div class="diff-dots">
+            <div class="diff-dot" style="background:#2e7d32"></div>
+            <div class="diff-dot" style="background:#2e7d32"></div>
+            <div class="diff-dot"></div>
+          </div>
+          <button class="reveal-btn" style="border-color:#2e7d32;color:#2e7d32" onclick="toggle(this,'#2e7d32')">💡 Xem lời giải</button>
+        </div>
+        <div class="solution-drawer">
+          <div class="sol-inner">
+            <h4 style="color:#2e7d32">📖 Lời giải</h4>
+            <div class="sol-step"><div class="sol-n" style="background:#2e7d32">1</div><div class="sol-t"><b>Siêu thị A:</b> Mua 5 tặng 1 → mua 10 hộp được 12 hộp. Trả = 25 000×10 = <em>250 000 đ</em>.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#2e7d32">2</div><div class="sol-t"><b>Siêu thị B:</b> Giá sau giảm = 25 000×82% = 20 500 đ/hộp. 12 hộp = 20 500×12 = <em>246 000 đ</em>.</div></div>
+            <div class="sol-step"><div class="sol-n" style="background:#2e7d32">3</div><div class="sol-t">Siêu thị B rẻ hơn: 250 000 − 246 000 = <em>4 000 đ</em>.</div></div>
+            <div class="ans-pill" style="background:#2e7d32">Siêu thị B rẻ hơn 4 000 đồng</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- end main-area -->
+
+<script>
+const colors = {
+  cd: '#ff6b35', tl: '#2ec4b6', dt: '#e040fb',
+  tt: '#ffb300', tg: '#1565c0', tien: '#2e7d32'
+};
+
+function show(id, el) {
+  document.querySelectorAll('.section-block').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.cat-chip').forEach(c => {
+    c.classList.remove('active');
+    c.style.background = '';
+    c.style.color = '';
+  });
+  document.getElementById('sec-' + id).classList.add('active');
+  el.classList.add('active');
+  const col = colors[id];
+  el.style.background = col;
+  el.style.color = '#fff';
+  el.style.borderColor = col;
+}
+
+// init first chip color
+document.getElementById('chip-cd').style.background = colors.cd;
+document.getElementById('chip-cd').style.color = '#fff';
+document.getElementById('chip-cd').style.borderColor = colors.cd;
+
+function toggle(btn, color) {
+  const card = btn.closest('.pcard');
+  const drawer = card.querySelector('.solution-drawer');
+  const open = drawer.classList.toggle('open');
+  btn.classList.toggle('open', open);
+  if (open) { btn.style.background = color; btn.style.borderColor = color; btn.textContent = '🙈 Ẩn lời giải'; }
+  else { btn.style.background = ''; btn.style.borderColor = color; btn.style.color = color; btn.textContent = '💡 Xem lời giải'; }
+}
+</script>
+</body>
+</html>
